@@ -1,0 +1,11 @@
+--First check if the name already exust then create it 
+
+
+
+create database datawarehouse
+use datawarehouse
+create schema bronze 
+go 
+create schema silver
+go 
+create schema gold
