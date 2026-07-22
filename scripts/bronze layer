@@ -1,0 +1,148 @@
+CREATE OR ALTER PROCEDURE bronze.load_broze_layer as
+begin
+declare @start_time datetime,@end_time datetime
+
+-- creating tables (i can ingest directly as well but it will be temp and not in the required format ) crm system
+drop table bronze.cust_info 
+create table bronze.cust_info(
+cst_id int,	
+cst_key	nvarchar(50),
+cst_firstname nvarchar(50),
+cst_lastname nvarchar(50),
+cst_marital_status nvarchar(50),
+cst_gndr nvarchar(50),
+cst_create_date date
+);
+drop table  bronze.prod_info
+create table bronze.prod_info(
+prd_id int,
+prd_key nvarchar(50),
+prd_nm nvarchar(50),
+prd_cost int,
+prd_line nvarchar(50),
+prd_start_dt date,
+prd_end_dt date,
+)
+
+
+drop table bronze.sales_info
+create table bronze.sales_info(
+sls_ord_num nvarchar(50),
+sls_prd_key nvarchar(50),
+sls_cust_id int,
+sls_order_dt nvarchar(50),
+sls_ship_dt nvarchar(50),
+sls_due_dt nvarchar(50) ,
+sls_sales int,
+sls_quantity int,
+sls_price int
+)
+
+---erp system
+drop table bronze.cust_az
+create table bronze.cust_az(
+CID nvarchar(50),	
+BDATE date,
+GEN nvarchar(50))
+
+drop table bronze.loc_az
+create table bronze.loc_az(
+CID nvarchar(50),
+CNTRY nvarchar(50))
+
+
+drop table bronze.cat_az
+create table bronze.cat_az(
+ID	nvarchar(50),
+CAT nvarchar(50),
+SUBCAT nvarchar(50),
+MAINTENANCE nvarchar(50))
+
+
+--bulk insert for crm
+
+
+set @start_time = Getdate();
+truncate table bronze.cust_info
+Bulk insert bronze.cust_info
+from 'C:\Users\Dell\Downloads\sql-data-warehouse-project\sql-data-warehouse-project\datasets\source_crm\cust_info.csv'
+with (
+firstrow=2,
+fieldterminator =',',
+tablock
+);
+
+ set @end_time = Getdate();
+print 'duration :' + cast(datediff(second,@start_time,@end_time) as nvarchar(10)) + ' seconds';
+
+
+set @start_time = Getdate();
+truncate table bronze.prod_info
+Bulk insert bronze.prod_info
+from 'C:\Users\Dell\Downloads\sql-data-warehouse-project\sql-data-warehouse-project\datasets\source_crm\prd_info.csv'
+with (
+firstrow=2,
+fieldterminator =',',
+tablock
+);
+
+ set @end_time = Getdate();
+print 'duration :' + cast(datediff(second,@start_time,@end_time) as nvarchar(10)) + ' seconds';
+
+
+set @start_time = Getdate();
+truncate table bronze.sales_info
+Bulk insert bronze.sales_info
+from 'C:\Users\Dell\Downloads\sql-data-warehouse-project\sql-data-warehouse-project\datasets\source_crm\sales_details.csv'
+with (
+firstrow=2,
+fieldterminator =',',
+tablock
+);
+
+ set @end_time = Getdate();
+print 'duration :' + cast(datediff(second,@start_time,@end_time) as nvarchar(10)) + ' seconds';
+
+--erp bulk insert changed the query again n again not written new ones 
+set @start_time = Getdate();
+truncate table bronze.cat_az
+Bulk insert bronze.cat_az
+from 'C:\Users\Dell\Downloads\sql-data-warehouse-project\sql-data-warehouse-project\datasets\source_erp\PX_CAT_G1V2.csv'
+with (
+firstrow=2,
+fieldterminator =',',
+tablock
+);
+
+ set @end_time = Getdate();
+print 'duration :' + cast(datediff(second,@start_time,@end_time) as nvarchar(10)) + ' seconds';
+
+
+set @start_time = Getdate();
+truncate table bronze.loc_az
+Bulk insert bronze.loc_az
+from 'C:\Users\Dell\Downloads\sql-data-warehouse-project\sql-data-warehouse-project\datasets\source_erp\LOC_A101.csv'
+with (
+firstrow=2,
+fieldterminator =',',
+tablock
+);
+
+ set @end_time = Getdate();
+print 'duration :' + cast(datediff(second,@start_time,@end_time) as nvarchar(10)) + ' seconds';
+
+
+set @start_time = Getdate();
+truncate table bronze.cust_az
+Bulk insert bronze.cust_az
+from 'C:\Users\Dell\Downloads\sql-data-warehouse-project\sql-data-warehouse-project\datasets\source_erp\CUST_AZ12.csv'
+with (
+firstrow=2,
+fieldterminator =',',
+tablock
+);
+
+ set @end_time = Getdate();
+print 'duration :' + cast(datediff(second,@start_time,@end_time) as nvarchar(10)) + ' seconds';
+
+end
